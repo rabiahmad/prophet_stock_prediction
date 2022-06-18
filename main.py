@@ -9,7 +9,6 @@ from datetime import date
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly
 from plotly import graph_objects as go
-import os
 
 st.title("Facebook Prophet - Stock Price Prediction")
 st.write("This is a demonstrator app created on Streamlit to show a use case of the Facebook Prophet "
