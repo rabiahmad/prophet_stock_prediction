@@ -1,4 +1,4 @@
-# prophet_stock_prediction
+# Facebook Prophet - Stock Market Predictions
 Using Facebook Prophet to predict stock market timeseries data
 
 # Creating the environment
