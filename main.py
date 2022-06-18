@@ -17,24 +17,25 @@ st.write("This is a demonstrator app created on Streamlit to show a use case of 
 START = "2015-01-01"
 TODAY = date.today().strftime("%Y-%m-%d")
 
-@st.cache
+@st.experimental_memo
 def load_stock_data(ticker:str):
     data = yf.download(ticker, START, TODAY)
     data.reset_index(inplace=True)
     return data
 
-tickers = ['AAPL', 'GOOG', 'TSLA', 'MSFT']
+tickers = ["VOO", "AAPL", "GOOG", "TSLA", "MSFT", "GME"]
 
 ticker = st.selectbox("Select tickers", tickers)
 
-n_years = st.slider("Years of prediction:", 1, 5)
+if "years_slider"not in st.session_state:
+    st.session_state.years_slider = 1
+
+n_years = st.slider("Years of prediction:", 1, 5, key="years_slider")
 period = n_years * 365
 
 data_load_state = st.text("Loading... {} data".format(ticker))
 data = load_stock_data(ticker)
 data_load_state.text("Loading... Complete!")
-
-
 st.write(data.tail())
 
 def plot_data():
@@ -52,11 +53,21 @@ plot_data()
 def make_prediction():
     df_train = data[["Date", "Close"]]
     df_train = df_train.rename(columns={"Date":"ds", "Close":"y"})
+    prediction_progress = st.progress(0)
+    prediction_progress.progress(10)
 
     model = Prophet()
     model.fit(df_train)
+
+    prediction_progress.progress(20)
+
     future = model.make_future_dataframe(periods=period)
+
+    prediction_progress.progress(40)
+
     forecast = model.predict(future)
+
+    prediction_progress.progress(80)
 
     st.subheader("Forecast")
 
@@ -67,6 +78,10 @@ def make_prediction():
     st.write("Forecast components")
     fig2 = model.plot_components(forecast)
     st.write(fig2)
+
+    prediction_progress.progress(100)
+
+    st.success('Successfully forecasted {} stock close price'.format(ticker))
 
 make_prediction()
 
